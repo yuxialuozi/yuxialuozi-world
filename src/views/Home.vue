@@ -9,7 +9,7 @@
         <img src="../assets/team-people/yuxialuozi.png" alt="头像1" class="avatar-logo" />
       </div>
       <div class="avatar">
-        <img src="../assets/team-people/yuxialuozi.png" alt="头像2" class="avatar-logo" />
+        <img src="../assets/team-people/ningzhi.png" alt="头像2" class="avatar-logo" />
       </div>
     </div>
 
