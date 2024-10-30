@@ -1,55 +1,88 @@
 <template>
-  <div class="sidebar">
+  <div :class="['sidebar', { 'collapsed': isCollapsed }]">
     <!-- 导航菜单 -->
-    <ul class="nav-menu">
-      <li><a href="/"><font-awesome-icon :icon="['fas', 'home']" /> 主页</a></li>
-      <li><a href="/project"><font-awesome-icon :icon="['fas', 'project-diagram']" /> 项目</a></li>
-      <li><a href="/information"><font-awesome-icon :icon="['fas', 'file-alt']" /> 博客</a></li>
-      <li><a href="/contact"><font-awesome-icon :icon="['fas', 'phone-alt']" /> 联系我</a></li>
-    </ul>
+    <transition name="fade" mode="out-in">
+      <ul v-if="!isCollapsed" class="nav-menu">
+        <li>
+          <a href="/" class="nav-button">
+            <Icon icon="material-symbols:home" />
+            主页
+          </a>
+        </li>
+        <li>
+          <a href="/mylife" class="nav-button">
+            <Icon icon="whh:oneupalt" />
+            我的生活
+          </a>
+        </li>
+        <li>
+          <a href="/myarticles" class="nav-button">
+            <Icon icon="material-symbols:article" />
+            我的文章
+          </a>
+        </li>
+        <li>
+          <a href="/friends" class="nav-button">
+            <Icon icon="material-symbols:link-rounded" />
+            友链
+          </a>
+        </li>
+        <li>
+          <a href="/contact" class="nav-button">
+            <Icon icon="codicon:link-external" />
+            联系我
+          </a>
+        </li>
+      </ul>
+    </transition>
+
+    <!-- 收缩按钮 -->
+    <button class="toggle-button" @click="toggleSidebar">
+      <Icon :icon="isCollapsed ? 'icon-park-outline:right' : 'icon-park-outline:left'" />
+    </button>
 
     <!-- 运行时间和备案信息 -->
-    <div class="footer">
-      <p>你知道吗？本站已经运行了 {{ runningTime }} 天</p>
-
-      <!-- 备案信息 -->
-      <div class="icp-info">
-        <a href="https://beian.miit.gov.cn" target="_blank">湘ICP备2023033213号-1</a>
-        <!-- 公安徽标和备案号 -->
-        <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000521" target="_blank" class="police-info">
-          湘公网安备 43010402000521号
-        </a>
+    <transition name="fade" mode="out-in">
+      <div class="footer" v-if="!isCollapsed">
+        <p>本站从2024年10月31到现在已经运行了 {{ runningTime }} 天</p>
+        <p>今天是 {{ currentDate }}，{{ festival }} </p>
+        <p>旅行者一号已经距离地球约 {{ voyagerDistance }} 公里</p>
+        <div class="icp-info">
+          <a href="https://beian.miit.gov.cn" target="_blank">湘ICP备2023033213号-1</a>
+        </div>
+        <div class="icp-info">
+          <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000521" target="_blank" class="police-info">
+            湘公网安备 43010402000521号
+          </a>
+        </div>
+        <p class="copyright">© 2024 yuxialuozi 版权所有</p>
       </div>
-
-      <!-- 添加的版权所有信息 -->
-  <p class="copyright">
-    © 2024 yuxialuozi 版权所有
-  </p>
-
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faHome, faProjectDiagram, faFileAlt, faPhoneAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-
-library.add(faHome, faProjectDiagram, faFileAlt, faPhoneAlt);
+import { Icon } from '@iconify/vue';
 
 export default {
   name: 'WebSidebar',
   components: {
-    FontAwesomeIcon,
+    Icon,
   },
   data() {
     return {
       runningTime: 0,
-      siteStartDate: new Date('2023-01-01'), // 将此日期替换为你的站点上线日期
+      siteStartDate: new Date('2024-10-31'),
+      isCollapsed: true, // 默认关闭
+      currentDate: '',
+      festival: '',
+      voyagerDistance: 0,
     };
   },
   mounted() {
     this.calculateRunningTime();
+    this.getCurrentDate();
+    this.calculateVoyagerDistance();
   },
   methods: {
     calculateRunningTime() {
@@ -58,68 +91,115 @@ export default {
       const differenceInDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
       this.runningTime = differenceInDays;
     },
+    toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed;
+    },
+    getCurrentDate() {
+      const now = new Date();
+      this.currentDate = new Intl.DateTimeFormat('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+      }).format(now);
+
+      const holidays = {
+        '1-1': '元旦',
+        '10-1': '国庆节',
+        '10-31': '万圣节',
+        '12-25': '圣诞节',
+      };
+      const monthDay = `${now.getMonth() + 1}-${now.getDate()}`;
+      this.festival = holidays[monthDay] || '今天没有特别的节日';
+    },
+    calculateVoyagerDistance() {
+      const launchDate = new Date('1977-09-05');
+      const now = new Date();
+      const secondsSinceLaunch = (now - launchDate) / 1000;
+      const voyagerSpeedKmPerSecond = 17;
+      this.voyagerDistance = Math.floor(secondsSinceLaunch * voyagerSpeedKmPerSecond).toLocaleString();
+    },
   },
 };
 </script>
 
 <style scoped>
-/* 侧边栏样式 */
 .sidebar {
-  width: 200px;
+  width: 250px; /* 默认宽度 */
   background-color: #ffffff;
   height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding-top: 20px;
+  transition: transform 0.3s; /* 使用 transform 进行横向动画 */
+  transform: translateX(0); /* 默认位置 */
 }
 
-.footer .copyright {
-  margin-top: 10px;
-  font-size: 10px;
-  color: #888888;
-  text-align: center;
+.sidebar.collapsed {
+  transform: translateX(-100%); /* 收缩时移动到左侧 */
 }
 
+/* 收缩按钮 */
+.toggle-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  position: absolute;
+  top: 50%; /* 垂直居中 */
+  transform: translateY(-50%);
+  right: -35px; /* 将按钮放置在侧边栏外 */
+  background: #ffffff;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-/* 导航菜单样式 */
+.toggle-button:hover {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  transform: scale(1.1);
+}
+
 .nav-menu {
   list-style-type: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-li {
-  padding: 12px 20px;
-  text-align: left;
-}
-
-a {
-  color: #333333;
-  text-decoration: none;
-  font-size: 18px;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 500;
+.nav-button {
   display: flex;
   align-items: center;
-  transition: all 0.3s ease;
-}
-
-i {
-  margin-right: 10px;
-}
-
-a:hover {
+  justify-content: flex-start;
+  padding: 12px 20px;
+  margin: 10px;
   background-color: #f7f7f7;
-  padding-left: 10px;
-  color: #000000;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color: #333333;
+  text-decoration: none;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s;
 }
 
-/* 备案信息和运行时间样式 */
+.nav-button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
 .footer {
   text-align: center;
   padding: 10px;
@@ -132,13 +212,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px; /* 增加备案信息和徽标之间的间距 */
-}
-
-.police-info img {
-  width: 16px; /* 设置公安徽标的大小 */
-  height: 16px;
-  margin-right: 5px;
+  gap: 5px;
 }
 
 .footer a {
@@ -149,5 +223,20 @@ a:hover {
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+.footer .copyright {
+  margin-top: 10px;
+  font-size: 10px;
+  color: #888888;
+  text-align: center;
+}
+
+/* 动画效果 */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 </style>

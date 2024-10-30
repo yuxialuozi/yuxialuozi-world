@@ -1,13 +1,21 @@
 <template>
     <div>
-      <h1>联系我们</h1>
-      <p>这是联系我们页面的内容。</p>
+      <h1>联系我</h1>
+      <p>欢迎通过以下方式与我联系：</p>
+      <ul>
+        <li>邮箱: example@example.com</li>
+        <li>电话: 123-456-7890</li>
+      </ul>
     </div>
   </template>
   
   <script>
   export default {
-    name: 'ContactPage', // 改成多单词的名称
+    name: 'ContactPage', // 修改为多词组件名称
   };
   </script>
+  
+  <style scoped>
+  /* 可根据需要添加样式 */
+  </style>
   

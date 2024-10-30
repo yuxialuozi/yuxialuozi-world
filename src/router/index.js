@@ -1,9 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../views/Home.vue';
-import Contact from '../views/contact.vue';
-import Information from '../views/information.vue'; // 确保文件路径和名称完全匹配
-import Project from '../views/project.vue';
 
+// 按需加载视图组件
+const Home = () => import('../views/Home.vue');
+const MyLife = () => import('../views/MyLife.vue');
+const MyArticles = () => import('../views/MyArticles.vue');
+const FriendsLinks = () => import('../views/FriendsLinks.vue');
+const Contact = () => import('../views/Contact.vue');
+const NotFound = () => import('../views/NotFound.vue');
 
 const routes = [
   {
@@ -12,24 +15,34 @@ const routes = [
     component: Home, // 主页
   },
   {
+    path: '/mylife',
+    name: 'MyLife',
+    component: MyLife, // 我的生活页面
+  },
+  {
+    path: '/myarticles',
+    name: 'MyArticles',
+    component: MyArticles, // 我的文章页面
+  },
+  {
+    path: '/friends',
+    name: 'FriendsLinks',
+    component: FriendsLinks, // 友链页面
+  },
+  {
     path: '/contact',
     name: 'Contact',
-    component: Contact, // 联系我们页面
+    component: Contact, // 联系我页面
   },
   {
-    path: '/information',
-    name: 'Information',
-    component: Information, // 信息页面
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFound, // 404页面
   },
-  {
-    path: '/project',
-    name: 'Project',
-    component: Project, // 项目页面
-  }
 ];
 
 const router = createRouter({
-  history: createWebHistory(), // 省略 process.env.BASE_URL，确保路径正常工作
+  history: createWebHistory(), // 使用HTML5历史模式
   routes,
 });
 
